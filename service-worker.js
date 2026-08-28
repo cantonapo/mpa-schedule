@@ -1,11 +1,11 @@
-const CACHE_NAME = 'mpa-schedule-v1';
+const CACHE_NAME = 'mpa-schedule-v2';
 
 const FILES_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './icon-192-v2.png',
+  './icon-512-v2.png'
 ];
 
 self.addEventListener('install', event => {
