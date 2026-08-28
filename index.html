@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f7fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MPA课表">
+<meta name="format-detection" content="telephone=no">
+<title>2026秋季学期 MPA课表</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#7d8ba1;--line:#e6ebf2;--blue:#214f92;--shadow:0 8px 26px rgba(30,53,88,.08);}
+*{box-sizing:border-box} html{scroll-behavior:smooth;background:var(--bg)} body{margin:0;color:var(--ink);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+button,select{font:inherit} button{touch-action:manipulation} .app{width:100%;max-width:620px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(86px + env(safe-area-inset-bottom));}
+.top{padding:4px 2px 15px} .term{font-size:12px;color:#73839a;font-weight:700;letter-spacing:.08em} h1{font-size:27px;line-height:1.2;margin:5px 0 0;letter-spacing:-.02em}
+.next-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#173f79,#2f69b1);color:#fff;border-radius:20px;padding:18px 18px 17px;box-shadow:0 12px 32px rgba(34,78,137,.23);margin-bottom:14px}
+.next-card:after{content:"";position:absolute;right:-52px;top:-58px;width:155px;height:155px;border-radius:50%;background:rgba(255,255,255,.08)} .next-label{font-size:12px;opacity:.74;margin-bottom:8px} .next-course{font-size:20px;font-weight:800;line-height:1.3;padding-right:55px} .next-main{display:flex;gap:11px;align-items:center;margin-top:10px;font-size:13px;flex-wrap:wrap} .next-main b{font-size:15px} .next-sub{font-size:12px;opacity:.78;margin-top:7px} .next-card.done{background:linear-gradient(135deg,#596579,#77859a)}
+.controls{position:sticky;top:0;z-index:30;background:rgba(244,247,251,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);margin:0 -14px;padding:9px 14px 10px;border-bottom:1px solid rgba(218,226,237,.8)}
+.months,.courses{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:1px 0} .months::-webkit-scrollbar,.courses::-webkit-scrollbar{display:none} .chip,.course-chip{flex:0 0 auto;border:1px solid #dfe6ef;background:#fff;color:#4c5a70;border-radius:999px;height:35px;padding:0 13px;font-size:13px;font-weight:700} .chip.active{background:#1f4f91;color:#fff;border-color:#1f4f91}
+.quick{display:flex;align-items:center;gap:8px;margin-top:8px} .toggle{height:34px;border:1px solid #dfe6ef;background:#fff;border-radius:10px;color:#536176;padding:0 11px;font-size:12px;font-weight:700} .toggle.active{background:#eaf2ff;color:#1f4f91;border-color:#cfe0fb} #count{margin-left:auto;font-size:11px;color:#8491a4;white-space:nowrap}
+.filter-details{margin:11px 0 2px} .filter-details summary{list-style:none;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#68778d;font-weight:700;cursor:pointer;padding:3px 2px 8px} .filter-details summary::-webkit-details-marker{display:none} .course-chip{height:33px;padding:0 11px;font-size:12px;display:inline-flex;align-items:center;gap:6px} .course-chip.active{background:#263a59;color:#fff;border-color:#263a59}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cc,#64748b);flex:0 0 auto} .c1{--cc:#3b82f6} .c2{--cc:#8b5cf6} .c3{--cc:#10b981} .c4{--cc:#f59e0b} .c5{--cc:#ec4899} .c6{--cc:#0ea5e9} .c7{--cc:#ef4444}
+.schedule{margin-top:15px} .month-divider{display:flex;align-items:center;gap:10px;margin:23px 2px 10px;color:#58687e;font-size:13px;font-weight:800} .month-divider:after{content:"";height:1px;flex:1;background:#dde5ee}
+.day-card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:11px;scroll-margin-top:102px} .day-card.past{opacity:.56} .day-card.today{border-color:#80aaf0;box-shadow:0 0 0 2px rgba(51,112,205,.12),var(--shadow)} .day-card.next-day{border-color:#b7cceb}
+.day-head{display:flex;justify-content:space-between;align-items:center;padding:13px 14px 11px;border-bottom:1px solid #eef2f6} .day-head>div{display:flex;align-items:baseline;gap:8px} .day-head strong{font-size:19px;letter-spacing:.01em} .day-head span{font-size:12px;color:#65758a;font-weight:700} .day-head small{font-size:11px;color:#96a2b3}
+.sessions{padding:5px 8px 8px} .session{display:grid;grid-template-columns:104px minmax(0,1fr);gap:11px;padding:12px 7px 12px 9px;border-left:4px solid var(--cc,#64748b);border-radius:11px} .session+.session{border-top:1px solid #f2f5f8} .time strong{display:block;font-size:14px;font-variant-numeric:tabular-nums;letter-spacing:-.01em} .time span{display:block;font-size:10px;color:#9aa5b5;margin-top:5px} .course-name{display:flex;align-items:center;gap:7px;min-width:0;line-height:1.35} .course-name b{font-size:14px} .tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:999px;white-space:nowrap} .tag.auto{background:#fff4d9;color:#946400}
+.meta{display:flex;flex-direction:column;gap:4px;margin-top:7px;font-size:11px;color:#69788d;line-height:1.45} .meta span{display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px} .meta em{font-style:normal;color:#9aa5b4}
+.empty{display:none;text-align:center;color:#929fb0;padding:56px 12px;font-size:13px} .period-box{margin-top:19px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden} .period-box summary{list-style:none;padding:14px 15px;font-size:13px;font-weight:800;cursor:pointer} .period-box summary::-webkit-details-marker{display:none} .period-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#edf1f5;border-top:1px solid #edf1f5} .period-grid div{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;background:#fff;font-size:11px} .period-grid span{color:#76859a} .period-grid b{font-variant-numeric:tabular-nums}
+.fab{position:fixed;z-index:40;right:max(14px,calc((100vw - 620px)/2 + 14px));bottom:calc(16px + env(safe-area-inset-bottom));height:43px;border:0;border-radius:999px;background:#1e4d8d;color:#fff;font-size:12px;font-weight:800;padding:0 16px;box-shadow:0 9px 25px rgba(32,75,136,.28)}
+.hidden{display:none!important}
+@media(min-width:500px){.app{padding-left:20px;padding-right:20px} .controls{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px} .session{grid-template-columns:120px minmax(0,1fr)}}
+@media(max-width:360px){h1{font-size:24px} .session{grid-template-columns:94px minmax(0,1fr);gap:8px} .time strong{font-size:13px} .course-name b{font-size:13px}}
+@media print{body{background:#fff} .app{max-width:none;padding:0} .controls,.fab,.next-card{display:none} .day-card{box-shadow:none;break-inside:avoid}}
+</style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#ffffff">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="apple-mobile-web-app-title" content="MPA课表">
+
+<link rel="apple-touch-icon" href="./icon-192.png">
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="term">2026 · 秋季学期</div><h1>MPA 课表</h1></header>
+  <section class="next-card" id="nextCard"><div class="next-label">下一次课程</div><div class="next-course" id="nextCourse">—</div><div class="next-main"><b id="nextDate">—</b><span id="nextTime"></span></div><div class="next-sub" id="nextSub"></div></section>
+
+  <section class="controls">
+    <div class="months"><button class="chip active" data-month="all">全部</button><button class="chip" data-month="2026-09">9月</button><button class="chip" data-month="2026-10">10月</button><button class="chip" data-month="2026-11">11月</button><button class="chip" data-month="2026-12">12月</button><button class="chip" data-month="2027-01">1月·2027</button></div>
+    <div class="quick"><button class="toggle" id="futureBtn">只看未结束</button><button class="toggle" id="resetBtn">重置筛选</button><span id="count"></span></div>
+    <details class="filter-details"><summary><span>按课程筛选</span><span>展开 ▾</span></summary><div class="courses"><button class="course-chip active" data-course="all">全部课程</button><button class="course-chip c1" data-course="公共政策分析"><i class="dot"></i>公共政策分析</button><button class="course-chip c2" data-course="公共管理"><i class="dot"></i>公共管理</button><button class="course-chip c3" data-course="公共经济学"><i class="dot"></i>公共经济学</button><button class="course-chip c4" data-course="社会研究方法"><i class="dot"></i>社会研究方法</button><button class="course-chip c5" data-course="宪法与行政法"><i class="dot"></i>宪法与行政法</button><button class="course-chip c6" data-course="公共伦理"><i class="dot"></i>公共伦理</button><button class="course-chip c7" data-course="学术规范与论文写作"><i class="dot"></i>学术规范与论文写作</button></div></details>
+  </section>
+
+  <main class="schedule" id="schedule"><section class="day-card" id="d-2026-09-12" data-date="2026-09-12" data-month="2026-09">
+      <header class="day-head">
+        <div><strong>09.12</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>石磊</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-09-13" data-date="2026-09-13" data-month="2026-09">
+      <header class="day-head">
+        <div><strong>09.13</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>范阳东</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-09-19" data-date="2026-09-19" data-month="2026-09">
+      <header class="day-head">
+        <div><strong>09.19</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>石磊</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-11" data-date="2026-10-11" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.11</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>范阳东</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-17" data-date="2026-10-17" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.17</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-18" data-date="2026-10-18" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.18</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>孙海婧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-24" data-date="2026-10-24" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.24</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-25" data-date="2026-10-25" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.25</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>孙海婧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-10-31" data-date="2026-10-31" data-month="2026-10">
+      <header class="day-head">
+        <div><strong>10.31</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>李璐</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-01" data-date="2026-11-01" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.01</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>孙海婧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>张银锋</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-07" data-date="2026-11-07" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.07</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>李璐</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-08" data-date="2026-11-08" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.08</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b></div>
+            <div class="meta"><span><em>教师</em>胡杨木</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>备注</em>实践课，自行安排</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-14" data-date="2026-11-14" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.14</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>胡杨木</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-15" data-date="2026-11-15" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.15</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c3" data-course="公共经济学">
+          <div class="time"><strong>08:30–09:55</strong><span>第1–2节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共经济学</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>孙海婧</span><span><em>备注</em>实践课自主学习</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-21" data-date="2026-11-21" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.21</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>胡杨木</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-22" data-date="2026-11-22" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.22</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>汪秋慧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-28" data-date="2026-11-28" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.28</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>肖淑娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-11-29" data-date="2026-11-29" data-month="2026-11">
+      <header class="day-head">
+        <div><strong>11.29</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>汪秋慧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>备注</em>实践课，自行安排</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-05" data-date="2026-12-05" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.05</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c1" data-course="公共政策分析">
+          <div class="time"><strong>10:05–12:15</strong><span>第3–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共政策分析</b></div>
+            <div class="meta"><span><em>教师</em>石磊</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c2" data-course="公共管理">
+          <div class="time"><strong>15:35–17:45</strong><span>第10–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共管理</b></div>
+            <div class="meta"><span><em>教师</em>姜劲</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-06" data-date="2026-12-06" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.06</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>汪秋慧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c4" data-course="社会研究方法">
+          <div class="time"><strong>15:35–17:45</strong><span>第10–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>社会研究方法</b></div>
+            <div class="meta"><span><em>教师</em>吴丁娟</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-12" data-date="2026-12-12" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.12</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>刘俊荣</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>汪秋慧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-13" data-date="2026-12-13" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.13</strong><span>周日</span></div>
+        <small>3 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c7" data-course="学术规范与论文写作">
+          <div class="time"><strong>08:30–09:55</strong><span>第1–2节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>学术规范与论文写作</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>备注</em>实践课，自行安排</span></div>
+          </div>
+        </article><article class="session c7" data-course="学术规范与论文写作">
+          <div class="time"><strong>10:05–11:30</strong><span>第3–4节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>学术规范与论文写作</b></div>
+            <div class="meta"><span><em>教师</em>赵醒村</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>叶岸滔</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-19" data-date="2026-12-19" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.19</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>叶岸滔</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>14:00–17:00</strong><span>第8–11节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>汪秋慧</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-20" data-date="2026-12-20" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.20</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c7" data-course="学术规范与论文写作">
+          <div class="time"><strong>08:30–11:30</strong><span>第1–4节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>学术规范与论文写作</b></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>吕玉文</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-26" data-date="2026-12-26" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.26</strong><span>周六</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>08:30–12:15</strong><span>第1–5节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>吕玉文</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>14:00–17:00</strong><span>第8–11节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>徐喜荣</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2026-12-27" data-date="2026-12-27" data-month="2026-12">
+      <header class="day-head">
+        <div><strong>12.27</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c7" data-course="学术规范与论文写作">
+          <div class="time"><strong>08:30–11:30</strong><span>第1–4节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>学术规范与论文写作</b></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>14:00–17:45</strong><span>第8–12节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b></div>
+            <div class="meta"><span><em>教师</em>叶岸滔</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2027-01-09" data-date="2027-01-09" data-month="2027-01">
+      <header class="day-head">
+        <div><strong>01.09</strong><span>周六</span></div>
+        <small>1 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c5" data-course="宪法与行政法">
+          <div class="time"><strong>14:00–17:00</strong><span>第8–11节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>宪法与行政法</b></div>
+            <div class="meta"><span><em>教师</em>徐喜荣</span><span><em>地点</em>A3-612（119座）</span></div>
+          </div>
+        </article></div>
+    </section><section class="day-card" id="d-2027-01-10" data-date="2027-01-10" data-month="2027-01">
+      <header class="day-head">
+        <div><strong>01.10</strong><span>周日</span></div>
+        <small>2 个课程时段</small>
+      </header>
+      <div class="sessions"><article class="session c7" data-course="学术规范与论文写作">
+          <div class="time"><strong>08:30–11:30</strong><span>第1–4节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>学术规范与论文写作</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>罗桢妮</span><span><em>备注</em>实践课，自行安排，无需到教室</span></div>
+          </div>
+        </article><article class="session c6" data-course="公共伦理">
+          <div class="time"><strong>14:00–15:25</strong><span>第8–9节</span></div>
+          <div class="course-info">
+            <div class="course-name"><i class="dot"></i><b>公共伦理</b><span class="tag auto">自主安排</span></div>
+            <div class="meta"><span><em>教师</em>叶岸滔</span><span><em>备注</em>自行安排，无需到教室</span></div>
+          </div>
+        </article></div>
+    </section><div class="empty" id="empty">没有符合条件的课程</div></main>
+
+  <details class="period-box"><summary>节次时间</summary><div class="period-grid"><div><span>第1节</span><b>08:30–09:10</b></div><div><span>第2节</span><b>09:15–09:55</b></div><div><span>第3节</span><b>10:05–10:45</b></div><div><span>第4节</span><b>10:50–11:30</b></div><div><span>第5节</span><b>11:35–12:15</b></div><div><span>第6节</span><b>12:20–13:00</b></div><div><span>第7节</span><b>13:00–13:40</b></div><div><span>第8节</span><b>14:00–14:40</b></div><div><span>第9节</span><b>14:45–15:25</b></div><div><span>第10节</span><b>15:35–16:15</b></div><div><span>第11节</span><b>16:20–17:00</b></div><div><span>第12节</span><b>17:05–17:45</b></div><div><span>第13节</span><b>17:45–18:25</b></div><div><span>第14节</span><b>18:30–19:10</b></div><div><span>第15节</span><b>19:15–19:55</b></div><div><span>第16节</span><b>20:00–20:40</b></div></div></details>
+</div>
+<button class="fab" id="nearestBtn">最近课程</button>
+<script>
+const DATA=[{"date": "2026-09-12", "label": "9月12日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "石磊", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-09-12", "label": "9月12日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-09-13", "label": "9月13日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "范阳东", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-09-13", "label": "9月13日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-09-19", "label": "9月19日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "石磊", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-09-19", "label": "9月19日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-10-11", "label": "10月11日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "范阳东", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-10-11", "label": "10月11日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-10-17", "label": "10月17日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "罗桢妮", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-10-17", "label": "10月17日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-10-18", "label": "10月18日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "孙海婧", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-10-18", "label": "10月18日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-10-24", "label": "10月24日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "罗桢妮", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-10-24", "label": "10月24日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-10-25", "label": "10月25日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "孙海婧", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-10-25", "label": "10月25日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-10-31", "label": "10月31日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "李璐", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-10-31", "label": "10月31日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-11-01", "label": "11月1日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "孙海婧", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-11-01", "label": "11月1日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "张银锋", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-11-07", "label": "11月7日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "李璐", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-11-07", "label": "11月7日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-11-08", "label": "11月8日", "weekday": "周日", "course": "公共经济学", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "胡杨木", "place": "A3-612（119座）", "cid": "c3"}, {"date": "2026-11-08", "label": "11月8日", "weekday": "周日", "course": "社会研究方法", "auto": true, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "实践课，自行安排", "cid": "c4"}, {"date": "2026-11-14", "label": "11月14日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "胡杨木", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-11-14", "label": "11月14日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-11-15", "label": "11月15日", "weekday": "周日", "course": "公共经济学", "auto": true, "time": "08:30–09:55", "period": "第1–2节", "teacher": "孙海婧", "place": "实践课自主学习", "cid": "c3"}, {"date": "2026-11-15", "label": "11月15日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-11-21", "label": "11月21日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "胡杨木", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-11-21", "label": "11月21日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-11-22", "label": "11月22日", "weekday": "周日", "course": "宪法与行政法", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "汪秋慧", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-11-22", "label": "11月22日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-11-28", "label": "11月28日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "肖淑娟", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-11-28", "label": "11月28日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-11-29", "label": "11月29日", "weekday": "周日", "course": "宪法与行政法", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "汪秋慧", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-11-29", "label": "11月29日", "weekday": "周日", "course": "社会研究方法", "auto": true, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吴丁娟", "place": "实践课，自行安排", "cid": "c4"}, {"date": "2026-12-05", "label": "12月5日", "weekday": "周六", "course": "公共政策分析", "auto": false, "time": "10:05–12:15", "period": "第3–5节", "teacher": "石磊", "place": "A3-612（119座）", "cid": "c1"}, {"date": "2026-12-05", "label": "12月5日", "weekday": "周六", "course": "公共管理", "auto": false, "time": "15:35–17:45", "period": "第10–12节", "teacher": "姜劲", "place": "A3-612（119座）", "cid": "c2"}, {"date": "2026-12-06", "label": "12月6日", "weekday": "周日", "course": "宪法与行政法", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "汪秋慧", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-12-06", "label": "12月6日", "weekday": "周日", "course": "社会研究方法", "auto": false, "time": "15:35–17:45", "period": "第10–12节", "teacher": "吴丁娟", "place": "A3-612（119座）", "cid": "c4"}, {"date": "2026-12-12", "label": "12月12日", "weekday": "周六", "course": "公共伦理", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "刘俊荣", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2026-12-12", "label": "12月12日", "weekday": "周六", "course": "宪法与行政法", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "汪秋慧", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-12-13", "label": "12月13日", "weekday": "周日", "course": "学术规范与论文写作", "auto": true, "time": "08:30–09:55", "period": "第1–2节", "teacher": "罗桢妮", "place": "实践课，自行安排", "cid": "c7"}, {"date": "2026-12-13", "label": "12月13日", "weekday": "周日", "course": "学术规范与论文写作", "auto": false, "time": "10:05–11:30", "period": "第3–4节", "teacher": "赵醒村", "place": "A3-612（119座）", "cid": "c7"}, {"date": "2026-12-13", "label": "12月13日", "weekday": "周日", "course": "公共伦理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "叶岸滔", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2026-12-19", "label": "12月19日", "weekday": "周六", "course": "公共伦理", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "叶岸滔", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2026-12-19", "label": "12月19日", "weekday": "周六", "course": "宪法与行政法", "auto": false, "time": "14:00–17:00", "period": "第8–11节", "teacher": "汪秋慧", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-12-20", "label": "12月20日", "weekday": "周日", "course": "学术规范与论文写作", "auto": false, "time": "08:30–11:30", "period": "第1–4节", "teacher": "罗桢妮", "place": "A3-612（119座）", "cid": "c7"}, {"date": "2026-12-20", "label": "12月20日", "weekday": "周日", "course": "公共伦理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "吕玉文", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2026-12-26", "label": "12月26日", "weekday": "周六", "course": "公共伦理", "auto": false, "time": "08:30–12:15", "period": "第1–5节", "teacher": "吕玉文", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2026-12-26", "label": "12月26日", "weekday": "周六", "course": "宪法与行政法", "auto": false, "time": "14:00–17:00", "period": "第8–11节", "teacher": "徐喜荣", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2026-12-27", "label": "12月27日", "weekday": "周日", "course": "学术规范与论文写作", "auto": false, "time": "08:30–11:30", "period": "第1–4节", "teacher": "罗桢妮", "place": "A3-612（119座）", "cid": "c7"}, {"date": "2026-12-27", "label": "12月27日", "weekday": "周日", "course": "公共伦理", "auto": false, "time": "14:00–17:45", "period": "第8–12节", "teacher": "叶岸滔", "place": "A3-612（119座）", "cid": "c6"}, {"date": "2027-01-09", "label": "1月9日", "weekday": "周六", "course": "宪法与行政法", "auto": false, "time": "14:00–17:00", "period": "第8–11节", "teacher": "徐喜荣", "place": "A3-612（119座）", "cid": "c5"}, {"date": "2027-01-10", "label": "1月10日", "weekday": "周日", "course": "学术规范与论文写作", "auto": true, "time": "08:30–11:30", "period": "第1–4节", "teacher": "罗桢妮", "place": "实践课，自行安排，无需到教室", "cid": "c7"}, {"date": "2027-01-10", "label": "1月10日", "weekday": "周日", "course": "公共伦理", "auto": true, "time": "14:00–15:25", "period": "第8–9节", "teacher": "叶岸滔", "place": "自行安排，无需到教室", "cid": "c6"}];
+let selectedMonth='all', selectedCourse='all', futureOnly=false;
+const cards=[...document.querySelectorAll('.day-card')];
+function todayStr(){const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dtOf(item){return new Date(`${item.date}T${item.time.slice(0,5)}:00`);}
+function updateNext(){
+  const now=new Date(); const upcoming=DATA.filter(x=>dtOf(x)>=now).sort((a,b)=>dtOf(a)-dtOf(b));
+  const card=document.getElementById('nextCard'); document.querySelectorAll('.next-day').forEach(x=>x.classList.remove('next-day'));
+  if(!upcoming.length){card.classList.add('done'); document.getElementById('nextCourse').textContent='本学期课程已结束'; document.getElementById('nextDate').textContent=''; document.getElementById('nextTime').textContent=''; document.getElementById('nextSub').textContent=''; return null;}
+  const n=upcoming[0]; const d=new Date(n.date+'T12:00:00');
+  const w=['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+  document.getElementById('nextCourse').textContent=n.course;
+  document.getElementById('nextDate').textContent=`${d.getMonth()+1}月${d.getDate()}日 · ${w}`;
+  document.getElementById('nextTime').textContent=n.time;
+  document.getElementById('nextSub').textContent=n.auto?`${n.teacher} · 自主安排`:`${n.teacher} · ${n.place}`;
+  const day=document.getElementById('d-'+n.date); if(day) day.classList.add('next-day'); return n;
+}
+function apply(){
+  const today=todayStr(); let days=0, slots=0; const monthVisible={};
+  cards.forEach(card=>{
+    const date=card.dataset.date; card.classList.toggle('past',date<today); card.classList.toggle('today',date===today);
+    let any=false;
+    card.querySelectorAll('.session').forEach(s=>{
+      const show=(selectedMonth==='all'||card.dataset.month===selectedMonth)&&(selectedCourse==='all'||s.dataset.course===selectedCourse)&&(!futureOnly||date>=today);
+      s.classList.toggle('hidden',!show); if(show){any=true;slots++;}
+    });
+    card.classList.toggle('hidden',!any); if(any){days++;monthVisible[card.dataset.month]=true;}
+  });
+  document.querySelectorAll('.month-divider').forEach(x=>x.remove());
+  let prevMonth='';
+  cards.filter(c=>!c.classList.contains('hidden')).forEach(card=>{
+    if(card.dataset.month!==prevMonth){
+      const [y,m]=card.dataset.month.split('-'); const div=document.createElement('div'); div.className='month-divider'; div.textContent=`${y}年${Number(m)}月`; card.before(div); prevMonth=card.dataset.month;
+    }
+  });
+  document.getElementById('count').textContent=`${days}天 · ${slots}段`;
+  document.getElementById('empty').style.display=days?'none':'block';
+}
+document.querySelectorAll('[data-month]').forEach(btn=>{if(btn.classList.contains('day-card'))return; btn.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selectedMonth=btn.dataset.month;apply();})});
+document.querySelectorAll('[data-course]').forEach(btn=>{if(btn.classList.contains('session'))return;btn.addEventListener('click',()=>{document.querySelectorAll('.course-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selectedCourse=btn.dataset.course;apply();})});
+document.getElementById('futureBtn').addEventListener('click',e=>{futureOnly=!futureOnly;e.currentTarget.classList.toggle('active',futureOnly);e.currentTarget.textContent=futureOnly?'显示全部日期':'只看未结束';apply();});
+document.getElementById('resetBtn').addEventListener('click',()=>{selectedMonth='all';selectedCourse='all';futureOnly=false;document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.month==='all'));document.querySelectorAll('.course-chip').forEach(b=>b.classList.toggle('active',b.dataset.course==='all'));const f=document.getElementById('futureBtn');f.classList.remove('active');f.textContent='只看未结束';apply();});
+document.getElementById('nearestBtn').addEventListener('click',()=>{const n=updateNext(); if(n)document.getElementById('d-'+n.date)?.scrollIntoView({behavior:'smooth',block:'start'}); else window.scrollTo({top:0,behavior:'smooth'});});
+updateNext();apply();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('./service-worker.js')
+        .then(() => {
+          console.log('Service Worker registered');
+        })
+        .catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
+</body>
+</html>
